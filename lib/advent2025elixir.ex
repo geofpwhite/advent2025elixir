@@ -24,11 +24,13 @@ defmodule Advent2025elixir do
         lines = String.split(content, "\n")
         {start, next} = Enum.split(lines, 1)
         line = Enum.at(start, 0)
-        IO.puts(next(line, next, 0, 50, 1))
+        {part1,part2}= next(line, next, 0, 50, 1)
+        IO.puts(part1)
+        IO.puts(part2)
     end
   end
 
-  def next("L" <> rest, [], zero_count, cur_sum, line_num) do
+  def next("L" <> rest, [], zero_count, cur_sum, zero_count_pt1) do
     restNum = Integer.parse(rest, 10)
 
     case restNum do
@@ -37,21 +39,20 @@ defmodule Advent2025elixir do
 
       {number, ""} ->
         zeroes_to_add = cur_sum - number
-        IO.puts(zeroes_to_add)
         div = abs(Integer.floor_div(zeroes_to_add, 100))
         zero_count = zero_count + div - to_int(cur_sum == 0 && div > 0)
         modNum = Integer.mod(cur_sum - number, 100)
         num = Integer.mod(max(modNum, 100 - modNum), 100)
 
         if num == 0 do
-          zero_count + 1
+          {zero_count + 1, zero_count_pt1 + 1}
         else
-          zero_count
+          {zero_count, zero_count_pt1}
         end
     end
   end
 
-  def next("L" <> rest, [next_line | next_lines], zero_count, cur_sum, line_num) do
+  def next("L" <> rest, [next_line | next_lines], zero_count, cur_sum, zero_count_pt1) do
     restNum = Integer.parse(rest, 10)
 
     case restNum do
@@ -70,17 +71,13 @@ defmodule Advent2025elixir do
 
         if num < 0 do
           num = 100 - modNum
-          next(next_line, next_lines, zc, num, line_num + 1)
+          next(next_line, next_lines, zc, num, zero_count_pt1 + 1)
         end
 
-        IO.puts(Integer.to_string(cur_sum) <> "-" <> rest <> "=" <> Integer.to_string(num))
-        IO.puts(zeroes_to_add)
-        IO.puts(zc)
-
         if num == 0 do
-          next(next_line, next_lines, zc + 1, num, line_num + 1)
+          next(next_line, next_lines, zc + 1, num, zero_count_pt1 + 1)
         else
-          next(next_line, next_lines, zc, num, line_num + 1)
+          next(next_line, next_lines, zc, num, zero_count_pt1)
         end
     end
   end
@@ -89,7 +86,7 @@ defmodule Advent2025elixir do
     if bool, do: 1, else: 0
   end
 
-  def next("R" <> rest, [], zero_count, cur_sum, line_num) do
+  def next("R" <> rest, [], zero_count, cur_sum, zero_count_pt1) do
     restNum = Integer.parse(rest, 10)
 
     case restNum do
@@ -109,14 +106,14 @@ defmodule Advent2025elixir do
         num = Integer.mod(cur_sum + number, 100)
 
         if num == 0 do
-          zero_count + 1
+          {zero_count_pt1 + 1,zero_count+1}
         else
-          zero_count
+          {zero_count_pt1,zero_count}
         end
     end
   end
 
-  def next("R" <> rest, [next_line | next_lines], zero_count, cur_sum, line_num) do
+  def next("R" <> rest, [next_line | next_lines], zero_count, cur_sum, zero_count_pt1) do
     restNum = Integer.parse(rest, 10)
 
     case restNum do
@@ -128,27 +125,19 @@ defmodule Advent2025elixir do
 
         zero_count =
           zero_count + abs(Integer.floor_div(zeroes_to_add, 100))
-          # - to_int(zeroes_to_add == 100) -
-          #   to_int(
-          #     cur_sum == 0 && abs(Integer.floor_div(zeroes_to_add, 100)) > 0 &&
-          #       zeroes_to_add != 100
-          #   )
+
+        # - to_int(zeroes_to_add == 100) -
+        #   to_int(
+        #     cur_sum == 0 && abs(Integer.floor_div(zeroes_to_add, 100)) > 0 &&
+        #       zeroes_to_add != 100
+        #   )
 
         num = Integer.mod(cur_sum + number, 100)
-        IO.puts(Integer.to_string(cur_sum) <> "+" <> rest <> "=" <> Integer.to_string(num))
-        IO.puts(Integer.to_string(zero_count))
-        IO.puts(Integer.to_string(abs(Integer.floor_div(zeroes_to_add, 100))))
-
-          next(next_line, next_lines, zero_count, num, line_num + 1)
-        # if num == 0 do
-        #   next(next_line, next_lines, zero_count + 1, num, line_num + 1)
-        # else
-        #   next(next_line, next_lines, zero_count, num, line_num + 1)
-        # end
+        next(next_line, next_lines, zero_count, num, zero_count_pt1 + to_int(num == 0))
     end
   end
 
-  def next("", [], zero_count, cur_sum, line_num) do
-    zero_count
+  def next("", [], zero_count, cur_sum, zero_count_pt1) do
+    {zero_count_pt1,zero_count}
   end
 end
