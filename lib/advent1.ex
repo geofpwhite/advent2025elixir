@@ -57,10 +57,6 @@ defmodule Advent1 do
     end
   end
 
-  def to_int(bool) do
-    if bool, do: 1, else: 0
-  end
-
   def next("R" <> rest, [], zero_count, cur_sum, zero_count_pt1) do
     restNum = Integer.parse(rest, 10)
 
@@ -99,7 +95,11 @@ defmodule Advent1 do
     end
   end
 
-  def next("", [], zero_count, cur_sum, zero_count_pt1) do
+  def next("", [], zero_count, _, zero_count_pt1) do
     {zero_count_pt1,zero_count}
   end
+  def to_int(bool) do
+    if bool, do: 1, else: 0
+  end
+
 end
