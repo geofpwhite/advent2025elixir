@@ -30,14 +30,12 @@ defmodule Advent2 do
   end
 
   def invalid_in_range(cur_sum, cur_num, max, [head | tail]) do
-    # IO.puts(x)
     cur_sum = cur_sum + check_2(cur_num)
 
     if cur_num == max do
       [first, second] = String.split(head, "-")
       {num1, _} = Integer.parse(first, 10)
       {num2, _} = Integer.parse(second, 10)
-      # IO.puts(num1)
       invalid_in_range(cur_sum, num1, num2, tail)
     else
       invalid_in_range(cur_sum, cur_num + 1, max, [head | tail])
